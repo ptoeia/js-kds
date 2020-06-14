@@ -1,0 +1,47 @@
+kind: Pod
+metadata:
+  name: jenkins-agent
+spec:
+  containers:
+  - name: node
+    image: node
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+      - name: build-cache
+        mountPath: "/usr/local/share/.cache/yarn"
+      - name: docker
+        mountPath: "/usr/bin/docker"
+      - name: docker-sock
+        mountPath: "/var/run/docker.sock"
+      - name: kubectl
+        mountPath: "/usr/bin/kubectl"
+  - name: kubetools
+    image: h.walrus.com/devops/kube-tools:v0.2
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+      #- name: docker-sock
+      #  mountPath: "/var/run/docker.sock"
+      - name: kubectl
+        mountPath: "/usr/bin/kubectl"
+  volumes:
+    - name: build-cache
+      persistentVolumeClaim:
+        claimName: jenkins-build-cache-pvc
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
+        type: ''
+    - name: docker
+      hostPath:
+        path: /usr/bin/docker
+        type: ''
+    - name: kubectl
+      hostPath:
+        path: /usr/bin/kubectl
+        type: ''
+  imagePullSecrets:
+    - name: registry-pull-secret

@@ -1,0 +1,51 @@
+kind: Pod
+metadata:
+  name: jenkins-agent
+spec:
+  containers:
+  - name: maven
+    image: maven:3.5.3-jdk-8
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+      - name: build-cache
+        mountPath: "/root/.m2"
+      - name: docker
+        mountPath: "/usr/bin/docker"
+      - name: docker-sock
+        mountPath: "/var/run/docker.sock"
+      - name: kubectl
+        mountPath: "/usr/bin/kubectl"
+        volumeMounts:
+      #- name: config-settings
+      #  mountPath: /root/.m2
+  - name: kubetools
+    image: h.walrus.com/devops/kube-tools:v0.2
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+      - name: kubectl
+        mountPath: "/usr/bin/kubectl"
+  volumes:
+    - name: build-cache
+      persistentVolumeClaim:
+        claimName: jenkins-build-cache-pvc    
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
+        type: ''
+    - name: docker
+      hostPath:
+        path: /usr/bin/docker
+        type: ''
+    - name: kubectl
+      hostPath:
+        path: /usr/bin/kubectl
+        type: ''
+    #- name: config-settings
+    #  configMap:
+    #    name: maven-settings-xml
+  imagePullSecrets:
+    - name: registry-pull-secret

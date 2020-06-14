@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: walrus-application
+spec:
+  template:
+    spec:
+      containers:
+        - name: walrus-application
+          volumeMounts:
+            - mountPath: /log
+              name: pod-logs-dir
+      volumes:
+        - hostPath:
+            path: /data/api_log/zsetc
+            type: ''
+          name: pod-logs-dir
+
+

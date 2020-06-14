@@ -1,0 +1,22 @@
+library 'kds'
+
+import groovy.transform.Field
+
+// 钉钉姓名或者昵称列表，多个用户逗号分隔 用于发布结果通知,谁发布谁接受通知
+@Field
+List dingTalkNickNameList = ['xx','xx']
+
+// 应用名 以代码仓库名称为准
+@Field
+String application = 'dash'
+
+//应用端口,前端项目统一使用80
+@Field
+String port = '80'
+
+// 应用所属项目代号 例如: |puppy|wallaby|lamb等
+@Field
+String project = 'etc'
+
+// 入口函数 不要在该语句后添加任何内容
+FeDeploy(this)

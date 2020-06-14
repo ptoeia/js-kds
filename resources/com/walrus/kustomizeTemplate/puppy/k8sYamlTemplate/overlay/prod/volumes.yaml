@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: walrus-application
+  namespace: walrus-namespace
+spec:
+  template:
+    spec:
+      containers:
+        - name: walrus-application
+          volumeMounts:
+            - mountPath: /log
+              name: pod-logs-dir
+            - mountPath: /data/trc
+              name: trc-file
+            - mountPath: /data/blacklist/upload
+              name: blacklist
+            - mountPath: /usr/skywalking/agent
+              name: sw-agent
+            - mountPath: /alipay_cert
+              name: alipay-cert
+      volumes:
+        - hostPath:
+            path: /data/api_log/puppy
+            type: ''
+          name: pod-logs-dir
+        - hostPath:
+            path: /data/trc
+            type: ''
+          name: trc-file
+        - hostPath:
+            path: /data/blacklist/upload
+            type: ''
+          name: blacklist
+        - hostPath:
+            path: /share/data/alipay_cert
+            type: ''
+          name: alipay-cert
+

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: walrus-application
+  namespace: walrus-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: walrus-application
+  template:
+    metadata:
+      labels:
+        app: walrus-application
+    spec:
+      imagePullSecrets:
+      - name: registry-pull-secret
+      containers:
+      - name: walrus-application
+        image: walrus-image
+        imagePullPolicy: Always
+        ports:
+        - containerPort: walrus-port
+          name: walrus
+        volumeMounts:
+         - name: sw-agent
+           mountPath: /usr/skywalking/agent
+      initContainers:
+        - name: sw-agent-sidecar
+          image: >-
+            h.walrus.com/etc/skywalking-agent-sidecar:8.4.0
+          command:
+            - sh
+          args:
+            - '-c'
+            - >-
+              mkdir -p /skywalking/agent && cp -r /usr/skywalking/agent/*
+              /skywalking/agent
+          resources: {}
+          volumeMounts:
+            - name: sw-agent
+              mountPath: /skywalking/agent
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      volumes:
+        - name: sw-agent
+          emptyDir: {}

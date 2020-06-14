@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: walrus-application
+  namespace: walrus-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: walrus-application
+  template:
+    metadata:
+      labels:
+        app: walrus-application
+    spec:
+      imagePullSecrets:
+      - name: registry-pull-secret
+      containers:
+      - name: walrus-application
+        image: walrus-image
+        imagePullPolicy: Always
+        ports:
+        - containerPort: walrus-port
+          name: walrus

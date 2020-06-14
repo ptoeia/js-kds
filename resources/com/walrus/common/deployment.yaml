@@ -1,0 +1,92 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: ${project}
+  namespace: puppy
+spec:
+  replicas: ${replicas_no}
+  selector:
+    matchLabels:
+      app: ${project}
+  template:
+    metadata:
+      labels:
+        app: ${project}
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - ${project}
+              topologyKey: kubernetes.io/hostname
+      initContainers:
+        - image: h.walrus.com/etc/skywalking-agent-sidecar:8.4.0
+          name: sw-agent-sidecar
+          imagePullPolicy: IfNotPresent
+          command: ["sh"]
+          args:
+            [
+              "-c",
+              "mkdir -p /skywalking/agent && cp -r /usr/skywalking/agent/* /skywalking/agent",
+            ]
+          volumeMounts:
+            - name: sw-agent
+              mountPath: /skywalking/agent
+      imagePullSecrets:
+      - name: ${secret_name}
+      containers:
+      - name: ${project} 
+        image: ${image_name}
+        env:
+          - name: NACOS_CONFIG_SERVER
+            value: ${NACOS_CONFIG_SERVER}
+          - name: env
+            value: 'prod'
+        ports:
+        - containerPort: ${port}
+          name: walrus
+        resources:
+          requests:
+            memory: 500Mi
+            cpu: 50m
+          limits:
+            memory: 3048Mi
+            cpu: 2000m
+        volumeMounts:
+        - name: pod-logs-dir
+          mountPath: "/log"
+        - name: trc-file
+          mountPath: "/data/trc"
+        - name: blacklist
+          mountPath: "/data/blacklist/upload"
+        - name: sw-agent
+          mountPath: "/usr/skywalking/agent"
+      volumes:
+      - name: pod-logs-dir
+        hostPath:
+          path: ${pod_logs_dir}
+      - name: trc-file
+        hostPath:
+          path: /data/trc
+      - name: blacklist
+        hostPath:
+          path: /data/blacklist/upload
+      - name: sw-agent
+        emptyDir: {}    
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${project}
+  namespace: ${namespace}
+spec:
+  selector:
+    app: ${project}
+  ports:
+    - protocol: TCP
+      port: ${port}

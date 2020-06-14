@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: walrus-application #占位符
+  namespace: walrus-namespace #占位符
+spec:
+  replicas: walrus-replicas #占位符
+  selector:
+    matchLabels:
+      app: walrus-application #占位符
+  template:
+    metadata:
+      labels:
+        app: walrus-application #占位符
+    spec:
+      imagePullSecrets:
+      - name: registry-pull-secret
+      containers:
+      - name: walrus-application #占位符
+        image: walrus-image  #占位符
+        imagePullPolicy: Always 
+        ports:
+        - containerPort: walrus-port #占位符
+          name: walrus

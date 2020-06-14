@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: walrus-application
+  namespace: walrus-namespace
+spec:
+  selector:
+    app: walrus-application
+  ports:
+    - name: http
+      protocol: TCP
+      port: walrus-port
+      targetPort: walrus-port

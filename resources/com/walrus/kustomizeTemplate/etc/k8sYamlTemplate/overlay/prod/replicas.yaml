@@ -1,0 +1,7 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: walrus-application
+  #namespace: walrus-namespace
+spec:
+  replicas: walrus-replicas

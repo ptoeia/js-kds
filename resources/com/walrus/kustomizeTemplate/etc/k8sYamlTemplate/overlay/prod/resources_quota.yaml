@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: walrus-application
+  #namespace: walrus-namespace
+spec:
+  template:
+    spec:
+      containers:
+        - name: walrus-application
+          resources:
+            limits:
+              cpu: '2'
+              memory: 3048Mi
+            requests:
+              cpu: 50m
+              memory: 500Mi
